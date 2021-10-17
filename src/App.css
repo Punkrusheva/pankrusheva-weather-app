@@ -1,0 +1,35 @@
+.App {
+  text-align: center;
+  background-color: #ffffff;
+}
+
+.App-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100wv;
+  height: 400px;
+  padding: 15px;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-title {
+  color: #ea7066;
+}
+
+.App-location,
+.App-weather {
+  margin: 0;
+  padding-bottom: 25px;
+}
+.App-icon {
+  position: absolute;
+  top: 40%;
+  left: center;
+  width: 150px;
+  height: auto;
+  background-color: rgba(255, 255, 255, 0.479);
+  border-radius:45px;
+
+}
