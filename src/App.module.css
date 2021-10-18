@@ -1,0 +1,33 @@
+.app {
+  background-color: #ffffff;
+  position: absolut;
+}
+
+.appHeader {
+  height: auto;
+  padding: 50px 20px 50px 20px;
+}
+
+.appTitle {
+  color: #ea7066;
+  padding: 20px;
+  margin: 0;
+}
+
+.appLocation,
+.appWeather {
+  margin: 0;
+  padding: 20px;
+  color: #e96e50;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.appIcon {
+  position: relative;
+  top: 50%;
+  left: 45%;
+  width: 100px;
+  height: auto;
+  background-color: #e96f5027;
+}

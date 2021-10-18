@@ -1,77 +1,78 @@
 import { useState, useEffect } from 'react'
-import './App.css'
+import styles from './App.module.css'
 import './stylesheets/normalize.css'
 import weatherAPI from './services/weatherAPI'
-import Filter from './Components/Filter/Filter'
+import SearchBar from './Components/SearchBar/SearchBar'
 import { ToastContainer } from "react-toastify"
-//import { toast } from 'react-toastify'
+import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import useGeoLocation from './hooks/useGeoLocation'
 
 function App() {
-  const [weather, setWeather] = useState({})
+  const [temperature, setTemperature] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [icon, setIcon] = useState('')
   const location = useGeoLocation()
   
-  console.log("location",location)
-
   useEffect(() => {
-    weatherAPI.getWeatherByCoordinates(location)
+    if (location.coordinates.lat !== '') {
+      weatherAPI.getWeatherByCoordinates(location)
       .then(res => { 
         if (res.main) {
-          setWeather(res.main.temp)
+          setTemperature(res.main.temp)
           setIcon(res.weather[0].icon)
-        }// else { toast.error('Nothing found') }
+        } else {toast.error('Could not get weather by coordinates')}
       })
-    weatherAPI.getWeatherByName(searchQuery)
+    }     
+    if (searchQuery) {
+      weatherAPI.getWeatherByName(searchQuery)
       .then(res => {
         if (res.main) {
-          setWeather(res.main.temp)
+          setTemperature(res.main.temp)
           setIcon(res.weather[0].icon)
-        }// else { toast.error('Nothing found') }
-      }
-      )
+        }  else {toast.error('Nothing found')}
+      })
+    }
   }, [location, searchQuery])
+  
+  const handleSearchSubmit = searchQuery => {
+    const normalizedSearchQuery = searchQuery.toLowerCase().trim();
+    setSearchQuery(normalizedSearchQuery);
+  };
 
-  const changeSpeciesFilter = e => {
-    setSearchQuery(e.currentTarget.value)
- }
-  const formatWeather = (weather - 273.15).toFixed(0)//конвертируем температуру из Кельвинов в Цельсии и оставляем целую часть
+  const formatWeather = (temperature - 273.15).toFixed(0)//конвертируем температуру из Кельвинов в Цельсии и оставляем целую часть
   
   const colorTemperatureDependence = (formatWeather) => {
     if (formatWeather <= -10) {return '#00ffff'}
     //if (formatWeather === 10) {return '#fff700'}
+    if (-10 < formatWeather < 30) {return '#fff700'}
     if (formatWeather >= 30) {return '#ff8c00'}
-    if (-10<formatWeather < 30) {return '#fff700'}
   }
   
   return (
-    <div className="App">
+    <div className={styles.app}>
         <ToastContainer autoClose={2500} />
-      <h1 className="App-title">Weather in your city</h1> 
-      <header className="App-header" style={{ backgroundColor: colorTemperatureDependence(formatWeather) }}>
-        <Filter
-          value={searchQuery}
-          placeholder='Set your location'
-          onChange={changeSpeciesFilter} />
-        {location.loaded ? <> 
-          <p className="App-location">
-            {searchQuery ? (<>Location: {searchQuery[0].toUpperCase() + searchQuery.slice(1)}</>) : (<>
+      <h1 className={styles.appTitle}>Weather in your city</h1> 
+      <header className={styles.appHeader} style={{ backgroundColor: colorTemperatureDependence(formatWeather) }}>
+        <SearchBar onSubmit={handleSearchSubmit}/> 
+      </header>
+      {location.loaded ?
+        <>
+          <p className={styles.appLocation}>
+          {searchQuery ?
+            (<>Location: {searchQuery[0].toUpperCase() + searchQuery.slice(1)}</>) :
+            (<>Location:
             lat: {JSON.stringify(location.coordinates.lat)},  
             lng: {JSON.stringify(location.coordinates.lng)}</>)}
-            
           </p>
-          <p className="App-weather">
-            Weather: {formatWeather} &deg;С
+          <p className={styles.appWeather}>
+            Temperature: {formatWeather} &deg;С
           </p>
-
-          <img className="App-icon" src={`https://openweathermap.org/img/wn/${icon}@2x.png`} alt="icon">
+          <img className={styles.appIcon} src={`https://openweathermap.org/img/wn/${icon}@2x.png`} alt="icon">
           </img>
-          </>
-          : "Location data not available yet."}
-                      
-      </header>
+        </>
+        :
+        "Location data not available yet."}
     </div>
   );
 }
